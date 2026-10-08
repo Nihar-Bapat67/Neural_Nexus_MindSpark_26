@@ -173,7 +173,7 @@ const LoginPage: React.FC = () => {
 
             {!supabaseConfigured && (
               <Alert variant="warning" className="mb-4">
-                Supabase is not configured. Add the project URL and public anon key to <code>frontend/.env.local</code>, then restart the frontend.
+                Supabase is not configured. Set <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in the repo-root <code>.env</code>, then restart the frontend.
               </Alert>
             )}
             {error && <Alert variant="error" className="mb-4">{error}</Alert>}

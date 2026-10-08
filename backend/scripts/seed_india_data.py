@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = BACKEND_DIR.parent
-load_dotenv(BACKEND_DIR / ".env")
+load_dotenv(REPO_ROOT / ".env")
 
 sys.path.insert(0, str(BACKEND_DIR))
 from app.store.cases import is_dataset_record, merge_profile_edit  # noqa: E402
@@ -259,7 +259,7 @@ def main() -> None:
     service_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
     db_url = os.getenv("DATABASE_URL", "")
     if not base_url or not service_key or not db_url:
-        raise SystemExit("Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and DATABASE_URL in backend/.env first.")
+        raise SystemExit("Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and DATABASE_URL in the repo-root .env first.")
 
     with open(REPO_ROOT / "relationship_managers_india.json", encoding="utf-8") as fh:
         rm_data = json.load(fh)

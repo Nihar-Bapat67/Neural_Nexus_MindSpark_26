@@ -306,28 +306,34 @@ Clients receive a **redacted view**: no compliance-screening results, no KYC-com
 - A PostgreSQL database and a Supabase project (local via the [Supabase CLI](https://supabase.com/docs/guides/cli), or hosted)
 - Optional: Docker Desktop, and an LLM key (Groq, Anthropic or OpenAI) for model-written explanations
 
-### 1. Backend
+### 1. Configuration
+
+The backend, frontend, Docker and scripts all read **one** file: `.env` at the repo root.
+
+```bash
+cp .env.example .env               # then fill in DATABASE_URL and the SUPABASE_* values
+```
+
+### 2. Backend
 
 ```bash
 cd backend
 pip install -r requirements-dev.txt
-cp ../.env.example .env            # then fill in DATABASE_URL and the SUPABASE_* values
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 2. Frontend
+### 3. Frontend
 
 ```bash
 cd frontend
-cp .env.example .env.local         # VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
-npm install
+npm install                        # reads SUPABASE_URL / SUPABASE_ANON_KEY from the root .env
 npm run dev                        # http://localhost:5173 (proxies /api to :8000)
 ```
 
-### 3. Supabase and demo data
+### 4. Supabase and demo data
 
 1. Apply `supabase/migrations/20261003000000_create_user_profiles.sql` (`supabase db reset` locally, or `supabase link` + `supabase db push`).
-2. Put the project URL and keys in `backend/.env` and `frontend/.env.local`. **The service-role key is server-only; never put it in a `VITE_` variable.**
+2. Put the project URL and keys in the root `.env`. Only `SUPABASE_URL` and `SUPABASE_ANON_KEY` reach the browser bundle; **the service-role key stays server-only.**
 3. Seed the fictitious dataset (clients, RMs, Supabase users, case records) from `backend/`:
 
    ```bash
@@ -338,7 +344,7 @@ npm run dev                        # http://localhost:5173 (proxies /api to :800
    `clients_india.json` and `relationship_managers_india.json` in the repository root before running it; skip this step if your
    database and Supabase project are already populated.
 
-### 4. Market seed data (optional, needs internet once)
+### 5. Market seed data (optional, needs internet once)
 
 ```bash
 cd backend && python scripts/build_seed.py   # writes data/seed/*.csv so demos run offline
@@ -372,12 +378,12 @@ python -m scripts.run_assessment_batch --sim path/to/simulation_output.json     
 ### Docker
 
 ```bash
-cp .env.example backend/.env       # fill in
-docker compose --env-file frontend/.env.local up --build
+cp .env.example .env               # fill in (skip if you already have it)
+docker compose up --build
 ```
 
 - App: <http://localhost:8080> (nginx serves the SPA and proxies `/api` to the backend).
-- `backend/.env` provides runtime settings; `--env-file` supplies the public `VITE_SUPABASE_*` build arguments.
+- The root `.env` provides the backend's runtime settings and the frontend's public `SUPABASE_URL` / `SUPABASE_ANON_KEY` build arguments.
 - **Always pass `--build` after pulling changes**: plain `docker compose up` reuses the previously built image.
 - The compose file sets `TRUST_PROXY_HEADERS=true` so rate limiting sees real client IPs behind nginx. Leave it `false` when the
   API is exposed directly.
@@ -387,12 +393,12 @@ docker compose --env-file frontend/.env.local up --build
 
 ## 🔧 Configuration
 
-### Environment variables (`backend/.env`; template in [`.env.example`](.env.example))
+### Environment variables (root `.env`; template in [`.env.example`](.env.example))
 
 | Variable | Purpose | Default |
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL connection string (cases, runs, audit, registration) | required for DB-backed routes |
-| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | Token validation against Supabase Auth | required |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | Supabase Auth (backend token validation and the frontend client) | required |
 | `SUPABASE_SERVICE_ROLE_KEY` | Account provisioning and demo seeding (**backend only**) | required for onboarding |
 | `LLM_PROVIDER` | `groq` \| `anthropic` \| `openai` \| `none` | `none` |
 | `GROQ_API_KEY` / `LLM_API_KEY`, `LLM_MODEL` | Provider key and model id (leave the model empty for the provider default) | empty |
@@ -401,7 +407,7 @@ docker compose --env-file frontend/.env.local up --build
 | `TRUST_PROXY_HEADERS` | Read the client IP from `X-Forwarded-For` (only behind a trusted proxy) | `false` |
 | `LOG_LEVEL` | `DEBUG` \| `INFO` \| `WARNING` \| `ERROR` | `INFO` |
 
-Frontend (`frontend/.env.local`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (public by design).
+The frontend build reads `SUPABASE_URL` and `SUPABASE_ANON_KEY` from the same file (public by design); nothing else in it reaches the browser.
 
 ### YAML configuration (`backend/config/`)
 

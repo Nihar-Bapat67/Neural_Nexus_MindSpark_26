@@ -39,7 +39,7 @@ ELN_PRODUCT = {
 
 @pytest.fixture(autouse=True)
 def no_real_llm(monkeypatch):
-    """Never call Groq from tests, whatever backend/.env says; tests opt in via groq_settings."""
+    """Never call Groq from tests, whatever .env says; tests opt in via groq_settings."""
     from app.core.config import get_settings
     monkeypatch.setattr(get_settings(), "llm_provider", "none")
 

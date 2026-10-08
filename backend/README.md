@@ -269,7 +269,7 @@ assess any case, clients only their own. Every assessment, with its explanation,
 to the audit hash chain.
 
 `explanation` has a plain-English `client` version and a technical `rm` briefing, written by
-Groq (`LLM_PROVIDER=groq`, `GROQ_API_KEY` in `backend/.env`; model defaults to
+Groq (`LLM_PROVIDER=groq`, `GROQ_API_KEY` in the repo-root `.env`; model defaults to
 `llama-3.3-70b-versatile`, override with `LLM_MODEL`). The LLM never decides: each reply is
 checked (verdict wording, failed checks worded as failures, every number traceable to the
 facts, banned phrases, no AML/FATCA detail in the client text) and replaced by a fixed

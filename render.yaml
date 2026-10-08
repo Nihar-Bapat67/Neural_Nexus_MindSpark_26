@@ -1,0 +1,42 @@
+# Render Blueprint for the FastAPI backend (the React frontend is on Vercel).
+# Set the secret values in the Render dashboard; the names match the root .env.example.
+services:
+  - type: web
+    name: neural-nexus-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: LOG_LEVEL
+        value: INFO
+      # Requests reach the API through Vercel and Render's proxies, so the client IP
+      # (used to rate-limit sign-in and registration) comes from X-Forwarded-For.
+      - key: TRUST_PROXY_HEADERS
+        value: "true"
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      - key: LLM_PROVIDER
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # The Vercel URL once the frontend is live, e.g. https://neural-nexus.vercel.app
+      - key: CORS_ORIGINS
+        sync: false

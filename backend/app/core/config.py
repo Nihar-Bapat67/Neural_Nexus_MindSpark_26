@@ -1,6 +1,6 @@
 """
 Application configuration.
-Loads settings from environment variables / .env file and YAML configs.
+Loads settings from environment variables / the repo-root .env file and YAML configs.
 """
 from __future__ import annotations
 
@@ -12,9 +12,10 @@ from typing import Any
 import yaml
 from dotenv import load_dotenv
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
+# The project has one .env, at the repo root. Real environment variables (Render,
+# Docker, CI) take precedence over it.
+load_dotenv(BASE_DIR.parent / ".env")
 CONFIG_DIR = BASE_DIR / "config"
 
 

@@ -1,13 +1,13 @@
-# docker compose --env-file frontend/.env.local up --build
-#   backend/.env  -> backend runtime settings
-#   --env-file    -> VITE_SUPABASE_* build args for the frontend (any file defining them works)
+# docker compose up --build
+#   The repo-root .env provides the backend's runtime settings, and Compose reads the same
+#   file to fill in the frontend's public SUPABASE_URL / SUPABASE_ANON_KEY build args.
 # Always use --build after code changes; plain `up` reuses the previously built images.
 services:
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    env_file: backend/.env
+    env_file: .env
     environment:
       # nginx (frontend) sits in front of the API and forwards the real client IP.
       TRUST_PROXY_HEADERS: "true"
@@ -24,8 +24,8 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        SUPABASE_URL: ${SUPABASE_URL}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
     ports:
       - "8080:80"
     depends_on:

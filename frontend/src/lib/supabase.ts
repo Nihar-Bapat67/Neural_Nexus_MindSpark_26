@@ -16,7 +16,7 @@ export const supabase: SupabaseClient | null = supabaseConfigured
 
 export function requireSupabase(): SupabaseClient {
   if (!supabase) {
-    throw new Error('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+    throw new Error('Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY in the repo-root .env.');
   }
   return supabase;
 }
